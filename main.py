@@ -48,19 +48,21 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.guilds = True
-bot = commands.Bot(command_prefix='!',intents=intents)
+intents.message_content = True
+bot = commands.Bot(command_prefix='!', intents=intents)
 scheduler = AsyncIOScheduler()
 
 @bot.command(name='setchannel')
 @commands.has_permissions(administrator=True)
 async def set_channel(ctx, channel: discord.TextChannel):
+    print("set channel")
     channel_config[ctx.guild.id] = channel.id
     await ctx.send(f"Channel set to {channel.mention} for daily LeetCode questions.")
 
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
-    scheduler.add_job(scheduled_task, CronTrigger(hour=0, minute=20, second=0, timezone=pytz.utc), args=[bot])
+    scheduler.add_job(scheduled_task, CronTrigger(hour=0, minute=15, second=0, timezone=pytz.utc), args=[bot])
     scheduler.start()
 
 bot.run(TOKEN)
