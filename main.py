@@ -1,36 +1,11 @@
 import os
-import requests
 import pytz
-from bs4 import BeautifulSoup
-from datetime import datetime
 import discord
 from dotenv import load_dotenv
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from discord.ext import commands
-
-def get_daily_leetcode_question():
-    url = 'https://leetcode.com/problemset/'
-
-    response = requests.get(url)
-    if response.status_code != 200:
-        print("Failed to retrieve the LeetCode page")
-        return None
-
-    soup = BeautifulSoup(response.text, 'html.parser')
-
-    tz = pytz.timezone('UTC')
-    current_date = datetime.now(tz).strftime('%Y-%m-%d')
-    print(current_date)
-
-    for a in soup.find_all('a', href=True):
-        if 'envType=daily-question' in a['href'] and f'envId={current_date}' in a['href']:
-            daily_question_url = 'https://leetcode.com' + a['href']
-            realurl,_ = daily_question_url.split("?")
-            return realurl
-
-    print("No daily question found for today.")
-    return None
+from dailyscraper import get_daily_leetcode_question
 
 async def scheduled_task(bot):
     url = get_daily_leetcode_question()
@@ -53,9 +28,12 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 scheduler = AsyncIOScheduler()
 
 @bot.command(name='setchannel')
-@commands.has_permissions(administrator=True)
-async def set_channel(ctx, channel: discord.TextChannel):
-    print("set channel")
+@commands.has_guild_permissions(administrator=True)
+async def set_channel(ctx, channel: discord.TextChannel = None):
+    if not channel:
+        await ctx.send("Please mention a channel.")
+        return
+
     channel_config[ctx.guild.id] = channel.id
     await ctx.send(f"Channel set to {channel.mention} for daily LeetCode questions.")
 
