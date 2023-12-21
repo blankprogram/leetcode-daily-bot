@@ -1,3 +1,4 @@
+import json
 import os
 import pytz
 import discord
@@ -9,15 +10,27 @@ from dailyscraper import get_daily_leetcode_question
 
 async def scheduled_task(bot):
     url = get_daily_leetcode_question()
-    if url:
-        for guild_id, channel_id in channel_config.items():
-            channel = bot.get_channel(channel_id)
-            if channel:
-                await channel.send(f"Today's Daily LeetCode Question: {url}")
-            else:
-                print(f"Channel not found in guild {guild_id}")
+    message = f"Today's Daily LeetCode Question: {url}" if url else "Today's Daily LeetCode Question Not Found."
 
-channel_config = {}
+    for guild_id, channel_id in channel_config.items():
+        channel = bot.get_channel(channel_id)
+        if channel:
+            await channel.send(message)
+        else:
+            print(f"Channel not found in guild {guild_id}")
+
+def save_channel_config():
+    with open('channel_config.json', 'w') as file:
+        json.dump(channel_config, file)
+
+def load_channel_config():
+    try:
+        with open('channel_config.json', 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+
+channel_config = load_channel_config()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -34,7 +47,8 @@ async def set_channel(ctx, channel: discord.TextChannel = None):
         await ctx.send("Please mention a channel.")
         return
 
-    channel_config[ctx.guild.id] = channel.id
+    channel_config[str(ctx.guild.id)] = channel.id
+    save_channel_config()
     await ctx.send(f"Channel set to {channel.mention} for daily LeetCode questions.")
 
 @bot.event
