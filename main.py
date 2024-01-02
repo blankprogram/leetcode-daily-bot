@@ -1,4 +1,3 @@
-import json
 import os
 import psycopg2
 import pytz
@@ -52,8 +51,6 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 scheduler = AsyncIOScheduler()
 
-
-
 @bot.command(name='setchannel')
 @commands.has_guild_permissions(administrator=True)
 async def set_channel(ctx, channel: discord.TextChannel = None):
@@ -68,7 +65,7 @@ async def set_channel(ctx, channel: discord.TextChannel = None):
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
-    scheduler.add_job(scheduled_task, CronTrigger(hour=12, minute=35, second=0, timezone=pytz.utc), args=[bot])
+    scheduler.add_job(scheduled_task, CronTrigger(hour=12, minute=50, second=0, timezone=pytz.utc), args=[bot])
     scheduler.start()
 
 bot.run(TOKEN)
