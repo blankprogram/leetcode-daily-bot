@@ -18,7 +18,7 @@ def get_daily_leetcode_question():
     
 
     try:
-        driver = webdriver.Chrome(executable_path= CHROMEDRIVER_PATH, options=chrome_options)
+        driver = webdriver.Chrome(execution_path=CHROMEDRIVER_PATH, options=chrome_options)
         driver.get(url)
         time.sleep(5) 
 
