@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
 from datetime import datetime
 import pytz
@@ -18,7 +19,8 @@ def get_daily_leetcode_question():
     
 
     try:
-        driver = webdriver.Chrome(execution_path=CHROMEDRIVER_PATH, options=chrome_options)
+        service = Service(CHROMEDRIVER_PATH)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get(url)
         time.sleep(5) 
 
