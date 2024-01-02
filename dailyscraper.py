@@ -1,4 +1,4 @@
-from selenium import webdriver
+from selenium.webdriver import chrome
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -14,9 +14,10 @@ def get_daily_leetcode_question():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.binary_location = chrome_bin
+    
 
     try:
-        driver = webdriver.Chrome(executable_path=os.environ.get('CHROMEDRIVER_PATH', 'chromedriver'), options=chrome_options)
+        driver = chrome(executable_path=os.environ.get('CHROMEDRIVER_PATH', 'chromedriver'), options=chrome_options)
         driver.get(url)
         time.sleep(5) 
 
