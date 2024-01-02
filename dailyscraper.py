@@ -1,4 +1,4 @@
-from selenium.webdriver import chrome
+from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -8,7 +8,7 @@ import time
 
 def get_daily_leetcode_question():
     url = 'https://leetcode.com/problemset/'
-    chrome_bin = os.environ.get('GOOGLE_CHROME_BIN', 'chromedriver')
+    chrome_bin = os.environ['GOOGLE_CHROME_BIN']
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
@@ -17,7 +17,7 @@ def get_daily_leetcode_question():
     
 
     try:
-        driver = chrome(executable_path=os.environ.get('CHROMEDRIVER_PATH', 'chromedriver'), options=chrome_options)
+        driver = webdriver.chrome(executable_path= os.environ['CHROMEDRIVER_PATH'], options=chrome_options)
         driver.get(url)
         time.sleep(5) 
 
