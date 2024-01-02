@@ -65,7 +65,7 @@ async def set_channel(ctx, channel: discord.TextChannel = None):
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
-    scheduler.add_job(scheduled_task, CronTrigger(hour=15, minute=0, second=0, timezone=pytz.utc), args=[bot])
+    scheduler.add_job(scheduled_task, CronTrigger(hour=15, minute=5, second=0, timezone=pytz.utc), args=[bot])
     scheduler.start()
 
 bot.run(TOKEN)
