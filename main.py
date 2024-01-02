@@ -1,5 +1,6 @@
 import json
 import os
+import psycopg2
 import pytz
 import discord
 from dotenv import load_dotenv
@@ -20,20 +21,33 @@ async def scheduled_task(bot):
             print(f"Channel not found in guild {guild_id}")
 
 def save_channel_config():
-    with open('channel_config.json', 'w') as file:
-        json.dump(channel_config, file)
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS channel_config (guild_id BIGINT PRIMARY KEY, channel_id BIGINT)")
+    for guild_id, channel_id in channel_config.items():
+        cur.execute("INSERT INTO channel_config (guild_id, channel_id) VALUES (%s, %s) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id", (guild_id, channel_id))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 def load_channel_config():
-    try:
-        with open('channel_config.json', 'r') as file:
-            return json.load(file)
-    except FileNotFoundError:
-        return {}
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT guild_id, channel_id FROM channel_config")
+    config = {str(row[0]): row[1] for row in cur.fetchall()}
+    cur.close()
+    conn.close()
+    return config
+
+def get_db_connection():
+    return psycopg2.connect(DATABASE_URL, sslmode='require')
+
 
 channel_config = load_channel_config()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+DATABASE_URL = os.getenv['DATABASE_URL']
 intents = discord.Intents.default()
 intents.guilds = True
 intents.message_content = True
