@@ -11,7 +11,7 @@ def get_daily_leetcode_question():
     url = 'https://leetcode.com/problemset/'
     chrome_options = Options()
     chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
     
@@ -28,7 +28,7 @@ def get_daily_leetcode_question():
         return None
     finally:
         if 'driver' in locals():
-            driver.quit()
+            driver.close()
 
     soup = BeautifulSoup(page_source, 'html.parser')
     tz = pytz.timezone('UTC')
